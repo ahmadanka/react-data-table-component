@@ -32,6 +32,9 @@ import {
 	SortOrder,
 } from './types';
 import useColumns from '../hooks/useColumns';
+import ActionsMenu from './ActionsMenu';
+import { IoEllipsisHorizontalSharp } from "react-icons/io5";
+
 
 function DataTable<T>(props: TableProps<T>): JSX.Element {
 	const {
@@ -116,6 +119,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 		direction = defaultProps.direction,
 		onColumnOrderChange = defaultProps.onColumnOrderChange,
 		className,
+		showActions
 	} = props;
 
 	const {
@@ -349,6 +353,38 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 	const visibleRows = selectableRowsVisibleOnly ? tableRows : sortedData;
 	const showSelectAll = persistSelectedOnPageChange || selectableRowsSingle || selectableRowsNoSelectAll;
 
+
+
+	const handleShowActions = (event: any) => {
+		const x = event.clientX;
+		const y = event.clientY;
+		setPosition({ x, y });
+		setShowActionMenu(true);
+
+
+	};
+	const [customTableColumns, setCustomTableColumns] = React.useState(tableColumns);
+	const [showActionsColumn, setShowActionsColumn] = React.useState(showActions);
+	const [showActionMenu, setShowActionMenu] = React.useState(false);
+	const [position, setPosition] = React.useState({ x: 0, y: 0 });
+
+	React.useEffect(() => {
+		if (showActionsColumn) {
+			const columns = [
+				...tableColumns,
+				{
+					name: 'Actions',
+					cell: (row: any) => <button style={{ background: 'transparent', border: 'none' }} onClick={(e) => handleShowActions(e)}><IoEllipsisHorizontalSharp /></button>,
+					with: '100px',
+					wrap: false,
+
+				}
+			];
+			setCustomTableColumns(columns);
+			setShowActionsColumn(false);
+		}
+
+	}, []);
 	return (
 		<ThemeProvider theme={currentTheme}>
 			{showHeader() && (
@@ -401,7 +437,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 											/>
 										))}
 									{expandableRows && !expandableRowsHideExpander && <ColumnExpander />}
-									{tableColumns.map(column => (
+									{customTableColumns.map(column => (
 										<Column
 											key={column.id}
 											column={column}
@@ -446,7 +482,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 											key={id}
 											keyField={keyField}
 											data-row-id={id}
-											columns={tableColumns}
+											columns={customTableColumns}
 											row={row}
 											rowCount={sortedData.length}
 											rowIndex={i}
@@ -511,6 +547,13 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 					/>
 				</div>
 			)}
+
+
+			{
+				showActionMenu && (
+					<ActionsMenu position={position} darkTheme={true} />
+				)
+			}
 		</ThemeProvider>
 	);
 }

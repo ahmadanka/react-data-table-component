@@ -114,6 +114,7 @@ export type TableProps<T> = {
 	 *  Shows and displays a header with a title
 	 *  */
 	title?: string | React.ReactNode;
+	showActions?: boolean;
 };
 
 export type TableColumnBase = {

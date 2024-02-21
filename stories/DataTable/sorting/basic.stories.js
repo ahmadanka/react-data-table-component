@@ -22,7 +22,7 @@ const columns = [
 ];
 
 export const Basic = () => {
-	return <DataTable title="Movie List" columns={columns} data={data} pagination />;
+	return <DataTable title="Movie List" columns={columns} data={data} pagination showActions={ true} />;
 };
 
 export default {

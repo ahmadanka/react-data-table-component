@@ -41,6 +41,31 @@ const defaultTheme = {
 	},
 };
 
+export const darkTheme =
+{
+	text: {
+		primary: '#fff',
+		secondary: '#fff',
+	},
+	background: {
+		default: '#1A202C',
+	},
+	context: {
+		background: '#cb4b16',
+		text: '#FFFFFF',
+	},
+	divider: {
+		default: '#fff',
+	},
+	action: {
+		button: 'rgba(0,0,0,.54)',
+		hover: 'rgba(0,0,0,.08)',
+		disabled: 'rgba(0,0,0,.12)',
+	},
+}
+
+
+
 export const defaultThemes: ThemeMapping = {
 	default: defaultTheme,
 	light: defaultTheme,
