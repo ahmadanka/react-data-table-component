@@ -11,7 +11,7 @@ interface ActionsBoxProps {
 }
 
 const ActionsMenu: React.FC<ActionsBoxProps> = ({ position, darkTheme = false }) => {
-  const actionsBoxStyle = {
+  const actionsBoxStyle: React.CSSProperties = {
     width: '135px',
     height: '150px',
     position: 'absolute',
@@ -37,7 +37,6 @@ const ActionsMenu: React.FC<ActionsBoxProps> = ({ position, darkTheme = false })
     borderRadius: '8px',
     border: '1px solid #efefef',
     cursor: 'pointer',
-
     _hover: {
       backgroundColor: '#f7f7f7'
     }

@@ -115,6 +115,7 @@ export type TableProps<T> = {
 	 *  */
 	title?: string | React.ReactNode;
 	showActions?: boolean;
+	showSearch?: boolean;
 };
 
 export type TableColumnBase = {
@@ -152,6 +153,11 @@ export interface ConditionalStyles<T> {
 	when: (row: T) => boolean;
 	style?: CSSObject | ((row: T) => CSSObject);
 	classNames?: string[];
+}
+
+export interface SearchProps {
+	filterText: string;
+	onFilter: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface TableStyles {

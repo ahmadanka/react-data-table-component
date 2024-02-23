@@ -34,6 +34,7 @@ import {
 import useColumns from '../hooks/useColumns';
 import ActionsMenu from './ActionsMenu';
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
+import SearchComponent from './SearchComponent';
 
 
 function DataTable<T>(props: TableProps<T>): JSX.Element {
@@ -119,7 +120,8 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 		direction = defaultProps.direction,
 		onColumnOrderChange = defaultProps.onColumnOrderChange,
 		className,
-		showActions
+		showActions,
+		showSearch,
 	} = props;
 
 	const {
@@ -159,6 +161,8 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 		contextMessage: defaultProps.contextMessage,
 	});
 
+	const [filterText, setFilterText] = React.useState('');
+
 	const { persistSelectedOnSort = false, persistSelectedOnPageChange = false } = paginationServerOptions;
 	const mergeSelections = !!(paginationServer && (persistSelectedOnPageChange || persistSelectedOnSort));
 	const enabledPagination = pagination && !progressPending && data.length > 0;
@@ -184,16 +188,37 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 	}, [sortServer, selectedColumn, sortDirection, data, sortFunction]);
 
 	const tableRows = React.useMemo(() => {
+		let filterd = null
+		if (filterText != '' && filterText != undefined) {
+			filterd = sortedData.filter(
+				item =>
+					JSON.stringify(item)
+						.toLowerCase()
+						.indexOf(filterText.toLowerCase()) !== -1
+			);
+		}
 		if (pagination && !paginationServer) {
 			// when using client-side pagination we can just slice the rows set
 			const lastIndex = currentPage * rowsPerPage;
 			const firstIndex = lastIndex - rowsPerPage;
 
-			return sortedData.slice(firstIndex, lastIndex);
+			console.log('sortedData', sortedData);
+			if (filterd != null) {
+				return filterd.slice(firstIndex, lastIndex);
+			} else {
+				return sortedData.slice(firstIndex, lastIndex);
+			}
+
 		}
 
-		return sortedData;
-	}, [currentPage, pagination, paginationServer, rowsPerPage, sortedData]);
+		if (filterd != null) {
+			return filterd;
+		} else {
+			return sortedData;
+
+		}
+
+	}, [currentPage, pagination, paginationServer, rowsPerPage, sortedData, filterText]);
 
 	const handleSort = React.useCallback((action: SortAction<T>) => {
 		dispatch(action);
@@ -355,6 +380,22 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+	const [customTableColumns, setCustomTableColumns] = React.useState(tableColumns);
+	const [showActionsColumn, setShowActionsColumn] = React.useState(showActions);
+	const [showActionMenu, setShowActionMenu] = React.useState(false);
+	const [position, setPosition] = React.useState({ x: 0, y: 0 });
+
 	const handleShowActions = (event: any) => {
 		const x = event.clientX;
 		const y = event.clientY;
@@ -363,10 +404,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 
 	};
-	const [customTableColumns, setCustomTableColumns] = React.useState(tableColumns);
-	const [showActionsColumn, setShowActionsColumn] = React.useState(showActions);
-	const [showActionMenu, setShowActionMenu] = React.useState(false);
-	const [position, setPosition] = React.useState({ x: 0, y: 0 });
+
 
 	React.useEffect(() => {
 		if (showActionsColumn) {
@@ -385,6 +423,66 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 		}
 
 	}, []);
+
+
+	React.useEffect(() => {
+		const scrollableElement = document;
+
+		const handleScroll = () => {
+			hideMenus()
+		};
+
+		if (scrollableElement) {
+			scrollableElement.addEventListener('scroll', handleScroll);
+		}
+		// Clean up the event listener when the component unmounts
+		return () => {
+			if (scrollableElement) {
+				scrollableElement.removeEventListener('scroll', handleScroll);
+			}
+		};
+	}, []);
+
+	const hideMenus = () => {
+		setShowActionMenu(false);
+
+	}
+
+	const handleClickOutside = (event: any) => {
+		let targetElement = event.target; // clicked element
+
+		do {
+
+			if (targetElement.id && (targetElement.id.includes('actionsBox'))) {
+				// This is a click inside. Do nothing, just return.
+				return;
+			}
+			// Go up the DOM
+			targetElement = targetElement.parentNode;
+		} while (targetElement);
+
+		hideMenus()
+
+
+	};
+
+	React.useEffect(() => {
+		// Attach the listeners to the document
+		document.addEventListener("mousedown", handleClickOutside);
+		document.addEventListener("touchstart", handleClickOutside);
+		return () => {
+			// Cleanup the event listeners on component unmount
+			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("touchstart", handleClickOutside);
+		};
+	}, []);
+
+	const handleSearch = (filterText: string) => {
+
+	}
+
+
+
 	return (
 		<ThemeProvider theme={currentTheme}>
 			{showHeader() && (
@@ -415,7 +513,8 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 			>
 				<Wrapper>
 					{progressPending && !persistTableHead && <ProgressWrapper>{progressComponent}</ProgressWrapper>}
-
+					{showSearch && <SearchComponent onFilter={e => setFilterText(e.target.value)}
+						filterText={filterText} />}
 					<Table disabled={disabled} className="rdt_Table" role="table">
 						{showTableHead() && (
 							<Head className="rdt_TableHead" role="rowgroup" $fixedHeader={fixedHeader}>
