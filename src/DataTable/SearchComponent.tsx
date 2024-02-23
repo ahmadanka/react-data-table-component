@@ -4,14 +4,18 @@ import { SearchProps } from "./types";
 
 export default function SearchComponent(props: SearchProps) {
 
-  const { filterText, onFilter } = props;
+  const { filterText, onFilter, wrapperStyle } = props;
 
   return (
     <div style={{
-      display: 'flex', gap: '2px', padding: '10px',
-      border: '1px solid #E2E8F0',
-      width: '300px',
-      borderRadius: '8px',
+      ...(wrapperStyle ? wrapperStyle : {
+        border: '1px solid #E2E8F0',
+        width: '300px',
+        borderRadius: '8px',
+      }),
+      display: 'flex',
+      gap: '2px',
+      padding: '10px',
     }}>
       <div style={{}}>
         <IoSearchOutline />

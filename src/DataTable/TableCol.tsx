@@ -14,7 +14,7 @@ interface ColumnStyleProps extends CellProps {
 	onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
 }
 
-const ColumnStyled = styled(CellExtended)<ColumnStyleProps>`
+const ColumnStyled = styled(CellExtended) <ColumnStyleProps>`
 	${({ button }) => button && 'text-align: center'};
 	${({ theme, $isDragging }) => $isDragging && theme.headCells.draggingStyle};
 `;
@@ -25,7 +25,7 @@ interface ColumnSortableProps {
 }
 
 const sortableCSS = css<ColumnSortableProps>`
-	cursor: pointer;
+
 	span.__rdt_custom_sort_icon__ {
 		i,
 		svg {
@@ -149,7 +149,7 @@ function TableCol<T>({
 		let direction = sortDirection;
 
 		if (equalizeId(selectedColumn.id, column.id)) {
-			direction = sortDirection === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC;
+			direction = sortDirection === SortOrder.DESC ? SortOrder.ASC : SortOrder.DESC;
 		}
 
 		onSort({
@@ -167,12 +167,16 @@ function TableCol<T>({
 		}
 	};
 
-	const renderNativeSortIcon = (sortActive: boolean) => (
-		<NativeSortIcon sortActive={sortActive} sortDirection={sortDirection} />
+	const renderNativeSortIcon = (sortActive: boolean, onClick: any) => (
+		<button style={{backgroundColor:"transparent", border:'none', 	cursor: 'pointer'}} onClick={onClick}>
+			<NativeSortIcon sortActive={sortActive} sortDirection={sortDirection} />
+		</button>
 	);
 
-	const renderCustomSortIcon = () => (
-		<span className={[sortDirection, '__rdt_custom_sort_icon__'].join(' ')}>{sortIcon}</span>
+	const renderCustomSortIcon = (onClick: any) => (
+		<button style={{backgroundColor:"transparent", border:'none', cursor: 'pointer'}} onClick={onClick}>
+			<span className={[sortDirection, '__rdt_custom_sort_icon__'].join(' ')}>{sortIcon}</span>
+		</button>
 	);
 
 	const sortActive = !!(column.sortable && equalizeId(selectedColumn.id, column.id));
@@ -212,24 +216,29 @@ function TableCol<T>({
 					role="columnheader"
 					tabIndex={0}
 					className="rdt_TableCol_Sortable"
-					onClick={!disableSort ? handleSortChange : undefined}
+
 					onKeyPress={!disableSort ? handleKeyPress : undefined}
 					$sortActive={!disableSort && sortActive}
 					disabled={disableSort}
 				>
-					{!disableSort && customSortIconRight && renderCustomSortIcon()}
-					{!disableSort && nativeSortIconRight && renderNativeSortIcon(sortActive)}
+					<div style={{ display: 'flex', justifyContent: "space-between", width: "100%" }}>
 
-					{typeof column.name === 'string' ? (
-						<ColumnText title={showTooltip ? column.name : undefined} ref={columnRef} data-column-id={column.id}>
-							{column.name}
-						</ColumnText>
-					) : (
-						column.name
-					)}
 
-					{!disableSort && customSortIconLeft && renderCustomSortIcon()}
-					{!disableSort && nativeSortIconLeft && renderNativeSortIcon(sortActive)}
+						{!disableSort && customSortIconRight && renderCustomSortIcon(!disableSort ? handleSortChange : null)}
+						{!disableSort && nativeSortIconRight && renderNativeSortIcon(sortActive, !disableSort ? handleSortChange : null)}
+
+						{typeof column.name === 'string' ? (
+							<ColumnText title={showTooltip ? column.name : undefined} ref={columnRef} data-column-id={column.id}>
+								{column.name}
+							</ColumnText>
+						) : (
+							column.name
+						)}
+
+						{!disableSort && customSortIconLeft && renderCustomSortIcon(!disableSort ? handleSortChange : null)}
+						{!disableSort && nativeSortIconLeft && renderNativeSortIcon(sortActive, !disableSort ? handleSortChange : null)}
+					</div>
+
 				</ColumnSortable>
 			)}
 		</ColumnStyled>

@@ -122,6 +122,8 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 		className,
 		showActions,
 		showSearch,
+		searchComponentStyle,
+		actionsIcon
 	} = props;
 
 	const {
@@ -412,7 +414,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 				...tableColumns,
 				{
 					name: 'Actions',
-					cell: (row: any) => <button style={{ background: 'transparent', border: 'none' }} onClick={(e) => handleShowActions(e)}><IoEllipsisHorizontalSharp /></button>,
+					cell: (row: any) => <button style={{ background: 'transparent', border: 'none' }} onClick={(e) => handleShowActions(e)}>{actionsIcon ? actionsIcon : <IoEllipsisHorizontalSharp />}</button>,
 					with: '100px',
 					wrap: false,
 
@@ -477,11 +479,6 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 		};
 	}, []);
 
-	const handleSearch = (filterText: string) => {
-
-	}
-
-
 
 	return (
 		<ThemeProvider theme={currentTheme}>
@@ -513,8 +510,11 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 			>
 				<Wrapper>
 					{progressPending && !persistTableHead && <ProgressWrapper>{progressComponent}</ProgressWrapper>}
-					{showSearch && <SearchComponent onFilter={e => setFilterText(e.target.value)}
-						filterText={filterText} />}
+					{showSearch && <SearchComponent
+						onFilter={e => setFilterText(e.target.value)}
+						filterText={filterText}
+						wrapperStyle={searchComponentStyle}
+					/>}
 					<Table disabled={disabled} className="rdt_Table" role="table">
 						{showTableHead() && (
 							<Head className="rdt_TableHead" role="rowgroup" $fixedHeader={fixedHeader}>

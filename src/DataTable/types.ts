@@ -116,6 +116,8 @@ export type TableProps<T> = {
 	title?: string | React.ReactNode;
 	showActions?: boolean;
 	showSearch?: boolean;
+	searchComponentStyle?: CSSObject;
+	actionsIcon?: any
 };
 
 export type TableColumnBase = {
@@ -158,6 +160,7 @@ export interface ConditionalStyles<T> {
 export interface SearchProps {
 	filterText: string;
 	onFilter: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	wrapperStyle?: CSSObject;
 }
 
 export interface TableStyles {
