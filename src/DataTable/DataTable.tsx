@@ -191,7 +191,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 	const tableRows = React.useMemo(() => {
 		let filterd = null
-		if (filterText != '' && filterText != undefined) {
+		if (filterText && filterText != '') {
 			filterd = sortedData.filter(
 				item =>
 					JSON.stringify(item)
@@ -199,13 +199,16 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 						.indexOf(filterText.toLowerCase()) !== -1
 			);
 		}
+
+		console.log('filterd', filterd);
+
 		if (pagination && !paginationServer) {
 			// when using client-side pagination we can just slice the rows set
 			const lastIndex = currentPage * rowsPerPage;
 			const firstIndex = lastIndex - rowsPerPage;
 
 			console.log('sortedData', sortedData);
-			if (filterd != null) {
+			if (filterd != null && filterd.length > 0) {
 				return filterd.slice(firstIndex, lastIndex);
 			} else {
 				return sortedData.slice(firstIndex, lastIndex);
@@ -213,7 +216,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 		}
 
-		if (filterd != null) {
+		if (filterd != null && filterd.length > 0) {
 			return filterd;
 		} else {
 			return sortedData;
