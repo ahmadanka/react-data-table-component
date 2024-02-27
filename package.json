@@ -1,6 +1,6 @@
 {
   "name": "aspire-react-data-table",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A simple to use declarative react based data table",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",

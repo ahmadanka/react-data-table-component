@@ -4,6 +4,7 @@ import { CellExtended, CellProps } from './Cell';
 import NativeSortIcon from '../icons/NativeSortIcon';
 import { equalizeId } from './util';
 import { TableColumn, SortAction, SortOrder } from './types';
+import { IoFilter } from 'react-icons/io5';
 
 interface ColumnStyleProps extends CellProps {
 	$isDragging?: boolean;
@@ -79,6 +80,11 @@ const ColumnText = styled.div`
 	white-space: nowrap;
 	text-overflow: ellipsis;
 `;
+const IconBtn = styled.button`
+background-color: transparent;
+ border: none;
+  cursor: pointer
+`;
 
 type TableColProps<T> = {
 	column: TableColumn<T>;
@@ -98,13 +104,17 @@ type TableColProps<T> = {
 	onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
 	onDragEnter: (e: React.DragEvent<HTMLDivElement>) => void;
 	onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
+	showFilter: boolean;
+	showFilterList: (event: any, selector: string) => void;
 };
 
 function TableCol<T>({
 	column,
 	disabled,
 	draggingColumnId,
-	selectedColumn = {},
+	selectedColumn = {
+		indentifier: ''
+	},
 	sortDirection,
 	sortIcon,
 	sortServer,
@@ -118,6 +128,8 @@ function TableCol<T>({
 	onDragEnd,
 	onDragEnter,
 	onDragLeave,
+	showFilter,
+	showFilterList
 }: TableColProps<T>): JSX.Element | null {
 	React.useEffect(() => {
 		if (typeof column.selector === 'string') {
@@ -130,7 +142,6 @@ function TableCol<T>({
 
 	const [showTooltip, setShowTooltip] = React.useState(false);
 	const columnRef = React.useRef<HTMLDivElement | null>(null);
-
 	React.useEffect(() => {
 		if (columnRef.current) {
 			setShowTooltip(columnRef.current.scrollWidth > columnRef.current.clientWidth);
@@ -168,15 +179,15 @@ function TableCol<T>({
 	};
 
 	const renderNativeSortIcon = (sortActive: boolean, onClick: any) => (
-		<button style={{backgroundColor:"transparent", border:'none', 	cursor: 'pointer'}} onClick={onClick}>
+		<IconBtn onClick={onClick}>
 			<NativeSortIcon sortActive={sortActive} sortDirection={sortDirection} />
-		</button>
+		</IconBtn>
 	);
 
 	const renderCustomSortIcon = (onClick: any) => (
-		<button style={{backgroundColor:"transparent", border:'none', cursor: 'pointer'}} onClick={onClick}>
+		<IconBtn onClick={onClick}>
 			<span className={[sortDirection, '__rdt_custom_sort_icon__'].join(' ')}>{sortIcon}</span>
-		</button>
+		</IconBtn>
 	);
 
 	const sortActive = !!(column.sortable && equalizeId(selectedColumn.id, column.id));
@@ -227,13 +238,20 @@ function TableCol<T>({
 						{!disableSort && customSortIconRight && renderCustomSortIcon(!disableSort ? handleSortChange : null)}
 						{!disableSort && nativeSortIconRight && renderNativeSortIcon(sortActive, !disableSort ? handleSortChange : null)}
 
-						{typeof column.name === 'string' ? (
-							<ColumnText title={showTooltip ? column.name : undefined} ref={columnRef} data-column-id={column.id}>
-								{column.name}
-							</ColumnText>
-						) : (
-							column.name
-						)}
+						<div style={{ display: 'flex', justifyContent: "space-between" }}>
+
+							{typeof column.name === 'string' ? (
+								<ColumnText title={showTooltip ? column.name : undefined} ref={columnRef} data-column-id={column.id}>
+									{column.name}
+								</ColumnText>
+							) : (
+								column.name
+							)}
+							{
+								(showFilter && column.indentifier && column.indentifier!='actions') && <IconBtn onClick={(e) => { showFilterList(e, column.indentifier) }} ><IoFilter /></IconBtn>
+							}
+						</div>
+
 
 						{!disableSort && customSortIconLeft && renderCustomSortIcon(!disableSort ? handleSortChange : null)}
 						{!disableSort && nativeSortIconLeft && renderNativeSortIcon(sortActive, !disableSort ? handleSortChange : null)}

@@ -35,6 +35,7 @@ import useColumns from '../hooks/useColumns';
 import ActionsMenu from './ActionsMenu';
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
 import SearchComponent from './SearchComponent';
+import ColumnFilterList from './ColumnFilterList';
 
 
 function DataTable<T>(props: TableProps<T>): JSX.Element {
@@ -123,7 +124,8 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 		showActions,
 		showSearch,
 		searchComponentStyle,
-		actionsIcon
+		actionsIcon,
+		showFilter
 	} = props;
 
 	const {
@@ -164,7 +166,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 	});
 
 	const [filterText, setFilterText] = React.useState('');
-
+	const [filters, setFilters] = React.useState<Filter[]>([]);
 	const { persistSelectedOnSort = false, persistSelectedOnPageChange = false } = paginationServerOptions;
 	const mergeSelections = !!(paginationServer && (persistSelectedOnPageChange || persistSelectedOnSort));
 	const enabledPagination = pagination && !progressPending && data.length > 0;
@@ -200,18 +202,32 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 			);
 		}
 
-		console.log('filterd', filterd);
 
 		if (pagination && !paginationServer) {
 			// when using client-side pagination we can just slice the rows set
 			const lastIndex = currentPage * rowsPerPage;
 			const firstIndex = lastIndex - rowsPerPage;
 
-			console.log('sortedData', sortedData);
-			if (filterd != null && filterd.length > 0) {
-				return filterd.slice(firstIndex, lastIndex);
+			let tableData = filterd != null && filterd.length > 0 ? filterd : sortedData;
+
+
+			if (filters && filters.length > 0) {
+
+				let filteredData = tableData.filter((item: any) => {
+					return filters.every(filter => {
+						const columnValue = item[filter.columnName] ;
+						const filterValues = filter.filterText;
+						if (filterValues === undefined || filterValues.length === 0) {
+							return true; // Ignore the filter if filterText is empty
+						}
+						return filterValues.includes(columnValue);
+					});
+				})
+				console.log('filteredData', filteredData);
+
+				return filteredData.length>0 ? filteredData.slice(firstIndex, lastIndex): [];
 			} else {
-				return sortedData.slice(firstIndex, lastIndex);
+				return tableData.slice(firstIndex, lastIndex);
 			}
 
 		}
@@ -223,7 +239,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 		}
 
-	}, [currentPage, pagination, paginationServer, rowsPerPage, sortedData, filterText]);
+	}, [currentPage, pagination, paginationServer, rowsPerPage, sortedData, filterText, filters]);
 
 	const handleSort = React.useCallback((action: SortAction<T>) => {
 		dispatch(action);
@@ -393,6 +409,10 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 
 
+	type Filter = {
+		columnName: string;
+		filterText: any[];
+	};
 
 
 
@@ -400,15 +420,22 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 	const [showActionsColumn, setShowActionsColumn] = React.useState(showActions);
 	const [showActionMenu, setShowActionMenu] = React.useState(false);
 	const [position, setPosition] = React.useState({ x: 0, y: 0 });
+	const [showFilterMenu, setShowFilterMenu] = React.useState(false);
+	const [filterListData, setFilterListData] = React.useState([])
+	const [selectedFilterColumn, setSelectedFilterColumn] = React.useState('');
+	const [selectedFilterList, setSelectedFilterList] = React.useState([]);
+
+
+
 
 	const handleShowActions = (event: any) => {
 		const x = event.clientX;
 		const y = event.clientY;
 		setPosition({ x, y });
 		setShowActionMenu(true);
-
-
 	};
+
+
 
 
 	React.useEffect(() => {
@@ -420,10 +447,12 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 					cell: (row: any) => <button style={{ background: 'transparent', border: 'none' }} onClick={(e) => handleShowActions(e)}>{actionsIcon ? actionsIcon : <IoEllipsisHorizontalSharp />}</button>,
 					with: '100px',
 					wrap: false,
+					indentifier: 'actions'
 
 				}
 			];
 			setCustomTableColumns(columns);
+
 			setShowActionsColumn(false);
 		}
 
@@ -450,6 +479,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 	const hideMenus = () => {
 		setShowActionMenu(false);
+		setShowFilterMenu(false);
 
 	}
 
@@ -458,11 +488,10 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 		do {
 
-			if (targetElement.id && (targetElement.id.includes('actionsBox'))) {
+			if (targetElement.id && (targetElement.id.includes('actionsBox') || targetElement.id.includes('filterBox'))) {
 				// This is a click inside. Do nothing, just return.
 				return;
 			}
-			// Go up the DOM
 			targetElement = targetElement.parentNode;
 		} while (targetElement);
 
@@ -481,6 +510,78 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 			document.removeEventListener("touchstart", handleClickOutside);
 		};
 	}, []);
+
+	function extractField(array: any, fieldName: string) {
+
+		const uniqueValues = new Set();
+		array.forEach((item: { [x: string]: any }) => {
+			uniqueValues.add(item[fieldName]);
+		});
+		return Array.from(uniqueValues);
+	}
+	const getSelectedFilter = (columnName: string) => {
+		const filter = filters.find((filter) => filter.columnName === columnName);
+		if (filter) {
+			return filter.filterText;
+		}
+		return [];
+	};
+
+	const handleFilterClick = (event: any, indentifier: string) => {
+		const x = event.clientX;
+		const y = event.clientY;
+		setPosition({ x, y });
+		setShowFilterMenu(true);
+		const fieldValues: unknown[] = extractField(data, indentifier);
+		setFilterListData(fieldValues as never[]);
+		setSelectedFilterColumn(indentifier);
+		setSelectedFilterList(getSelectedFilter(indentifier) as never[]);
+	};
+
+
+
+	const handleFilteredData = (selectedFilters: any[]) => {
+		console.log('selectedFilters', selectedFilters);
+
+		// Create a new object with the selected column and filter
+		const newFilter = {
+			columnName: selectedFilterColumn,
+			filterText: selectedFilters,
+		};
+
+		// Check if a filter for the selected column already exists
+		const existingFilterIndex = filters.findIndex(
+			(filter) => filter.columnName === selectedFilterColumn
+		);
+
+		if (existingFilterIndex !== -1) {
+			if (selectedFilters.length === 0) {
+				// If filterText is empty, remove the corresponding item from the filters array
+				setFilters((prevFilterArray) => {
+					const newFilterArray = [...prevFilterArray];
+					newFilterArray.splice(existingFilterIndex, 1);
+					return newFilterArray;
+				});
+			} else {
+				// If it exists and filterText is not empty, update the filter text
+				setFilters((prevFilterArray) => {
+					const newFilterArray = [...prevFilterArray];
+					newFilterArray[existingFilterIndex] = newFilter;
+					return newFilterArray;
+				});
+			}
+		} else {
+			if (selectedFilters.length > 0) {
+				// If it doesn't exist and filterText is not empty, add the new filter to the array
+				setFilters((prevFilterArray) => [...prevFilterArray, newFilter]);
+			}
+		}
+	};
+
+
+
+
+
 
 
 	return (
@@ -559,6 +660,8 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 											onDragEnter={handleDragEnter}
 											onDragLeave={handleDragLeave}
 											draggingColumnId={draggingColumnId}
+											showFilter={showFilter ?? true}
+											showFilterList={handleFilterClick}
 										/>
 									))}
 								</HeadRow>
@@ -654,6 +757,11 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 			{
 				showActionMenu && (
 					<ActionsMenu position={position} darkTheme={true} />
+				)
+			}
+			{
+				showFilterMenu && (
+					<ColumnFilterList position={position} darkTheme={true} listData={filterListData} handleFilteredData={handleFilteredData} selectedFilterList={selectedFilterList} />
 				)
 			}
 		</ThemeProvider>

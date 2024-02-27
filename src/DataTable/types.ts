@@ -118,6 +118,7 @@ export type TableProps<T> = {
 	showSearch?: boolean;
 	searchComponentStyle?: CSSObject;
 	actionsIcon?: any
+	showFilter?: boolean;
 };
 
 export type TableColumnBase = {
@@ -142,6 +143,7 @@ export type TableColumnBase = {
 };
 
 export interface TableColumn<T> extends TableColumnBase {
+	indentifier: string;
 	name?: string | number | React.ReactNode;
 	sortField?: string;
 	cell?: (row: T, rowIndex: number, column: TableColumn<T>, id: string | number) => React.ReactNode;
@@ -149,6 +151,7 @@ export interface TableColumn<T> extends TableColumnBase {
 	format?: Format<T> | undefined;
 	selector?: Selector<T>;
 	sortFunction?: ColumnSortFunction<T>;
+
 }
 
 export interface ConditionalStyles<T> {

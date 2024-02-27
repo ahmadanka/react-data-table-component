@@ -9,16 +9,19 @@ const columns = [
 		name: 'Title',
 		selector: row => row.title,
 		sortable: true,
+		indentifier: 'title'
 	},
 	{
 		name: 'Director',
 		selector: row => row.director,
 		sortable: true,
+		indentifier: 'director'
 	},
 	{
-		name: 'Year',
+		name: 'year',
 		selector: row => row.year,
 		sortable: true,
+		indentifier: 'year'
 	},
 ];
 
