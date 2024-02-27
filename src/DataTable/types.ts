@@ -143,7 +143,7 @@ export type TableColumnBase = {
 };
 
 export interface TableColumn<T> extends TableColumnBase {
-	indentifier: string;
+	identifier: string;
 	name?: string | number | React.ReactNode;
 	sortField?: string;
 	cell?: (row: T, rowIndex: number, column: TableColumn<T>, id: string | number) => React.ReactNode;

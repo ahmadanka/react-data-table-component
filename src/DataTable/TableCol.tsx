@@ -113,7 +113,7 @@ function TableCol<T>({
 	disabled,
 	draggingColumnId,
 	selectedColumn = {
-		indentifier: ''
+		identifier: ''
 	},
 	sortDirection,
 	sortIcon,
@@ -248,7 +248,7 @@ function TableCol<T>({
 								column.name
 							)}
 							{
-								(showFilter && column.indentifier && column.indentifier!='actions') && <IconBtn onClick={(e) => { showFilterList(e, column.indentifier) }} ><IoFilter /></IconBtn>
+								(showFilter && column.identifier && column.identifier!='actions') && <IconBtn onClick={(e) => { showFilterList(e, column.identifier) }} ><IoFilter /></IconBtn>
 							}
 						</div>
 

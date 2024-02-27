@@ -447,7 +447,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 					cell: (row: any) => <button style={{ background: 'transparent', border: 'none' }} onClick={(e) => handleShowActions(e)}>{actionsIcon ? actionsIcon : <IoEllipsisHorizontalSharp />}</button>,
 					with: '100px',
 					wrap: false,
-					indentifier: 'actions'
+					identifier: 'actions'
 
 				}
 			];
@@ -527,15 +527,15 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 		return [];
 	};
 
-	const handleFilterClick = (event: any, indentifier: string) => {
+	const handleFilterClick = (event: any, identifier: string) => {
 		const x = event.clientX;
 		const y = event.clientY;
 		setPosition({ x, y });
 		setShowFilterMenu(true);
-		const fieldValues: unknown[] = extractField(data, indentifier);
+		const fieldValues: unknown[] = extractField(data, identifier);
 		setFilterListData(fieldValues as never[]);
-		setSelectedFilterColumn(indentifier);
-		setSelectedFilterList(getSelectedFilter(indentifier) as never[]);
+		setSelectedFilterColumn(identifier);
+		setSelectedFilterList(getSelectedFilter(identifier) as never[]);
 	};
 
 
