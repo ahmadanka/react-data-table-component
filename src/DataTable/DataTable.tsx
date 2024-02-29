@@ -125,7 +125,8 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 		showSearch,
 		searchComponentStyle,
 		actionsIcon,
-		showFilter
+		showFilter,
+		mainComtainerId = '',
 	} = props;
 
 	const {
@@ -215,7 +216,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 				let filteredData = tableData.filter((item: any) => {
 					return filters.every(filter => {
-						const columnValue = item[filter.columnName] ;
+						const columnValue = item[filter.columnName];
 						const filterValues = filter.filterText;
 						if (filterValues === undefined || filterValues.length === 0) {
 							return true; // Ignore the filter if filterText is empty
@@ -225,7 +226,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 				})
 				console.log('filteredData', filteredData);
 
-				return filteredData.length>0 ? filteredData.slice(firstIndex, lastIndex): [];
+				return filteredData.length > 0 ? filteredData.slice(firstIndex, lastIndex) : [];
 			} else {
 				return tableData.slice(firstIndex, lastIndex);
 			}
@@ -445,7 +446,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 				{
 					name: 'Actions',
 					cell: (row: any) => <button style={{ background: 'transparent', border: 'none' }} onClick={(e) => handleShowActions(e)}>{actionsIcon ? actionsIcon : <IoEllipsisHorizontalSharp />}</button>,
-					with: '100px',
+					with: '10px',
 					wrap: false,
 					identifier: 'actions'
 
@@ -460,7 +461,7 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 
 	React.useEffect(() => {
-		const scrollableElement = document;
+		const scrollableElement = mainComtainerId == '' ? document : document.getElementById(mainComtainerId);
 
 		const handleScroll = () => {
 			hideMenus()
@@ -756,12 +757,12 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 			{
 				showActionMenu && (
-					<ActionsMenu position={position} darkTheme={true} />
+					<ActionsMenu position={position} theme={currentTheme} />
 				)
 			}
 			{
 				showFilterMenu && (
-					<ColumnFilterList position={position} darkTheme={true} listData={filterListData} handleFilteredData={handleFilteredData} selectedFilterList={selectedFilterList} />
+					<ColumnFilterList position={position} theme={currentTheme} listData={filterListData} handleFilteredData={handleFilteredData} selectedFilterList={selectedFilterList} />
 				)
 			}
 		</ThemeProvider>

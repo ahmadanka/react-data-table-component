@@ -1,8 +1,9 @@
 import React from 'react';
 import doc from './basic.mdx';
 import data from '../../constants/sampleMovieData';
-import DataTable from '../../../src/index';
+import DataTable, {createTheme} from '../../../src/index';
 import { IoChevronUpOutline, IoEllipsisHorizontalSharp } from 'react-icons/io5';
+
 
 const columns = [
 	{
@@ -26,7 +27,30 @@ const columns = [
 ];
 
 export const Basic = () => {
-	return <DataTable title="Movie List" columns={columns} data={data} pagination searchComponentStyle={{
+	createTheme('solarized', {
+		text: {
+				primary: '#fff',
+				secondary: '#fff',
+		},
+		background: {
+				default: '#1A202C',
+		},
+		context: {
+				background: '#cb4b16',
+				text: '#FFFFFF',
+		},
+		divider: {
+				default: '#fff',
+		},
+		action: {
+				button: 'rgba(0,0,0,.54)',
+				hover: 'rgba(0,0,0,.08)',
+				disabled: 'rgba(0,0,0,.12)',
+		},
+}, 'dark');
+
+
+	return <DataTable title="Movie List"   columns={columns} data={data} pagination searchComponentStyle={{
 		border: '1px solid #E2E8F0', width: '300px',
 		borderRadius: '8px'
 	}}

@@ -14,10 +14,13 @@ export default function SearchComponent(props: SearchProps) {
         borderRadius: '8px',
       }),
       display: 'flex',
+      alignItems: 'center',
+      alignContent: 'center',
       gap: '2px',
       padding: '10px',
+      margin: '2px'
     }}>
-      <div style={{}}>
+      <div style={{ display: 'flex', justifyContent: "center", alignItems: "center" }}>
         <IoSearchOutline />
       </div>
       <input

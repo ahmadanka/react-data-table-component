@@ -1,4 +1,4 @@
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 
 interface Position {
   x: number;
@@ -7,14 +7,14 @@ interface Position {
 
 interface FilterListProps {
   position: Position;
-  darkTheme?: boolean;
+  theme?: any;
   listData: any;
   handleFilteredData: (data: string[]) => void;
   selectedFilterList?: string[];
 }
-const ColumnFilterList: React.FC<FilterListProps> = ({ position, listData, handleFilteredData, selectedFilterList, darkTheme = false }) => {
+const ColumnFilterList: React.FC<FilterListProps> = ({ position, listData, handleFilteredData, selectedFilterList, theme }) => {
   const listStyle: React.CSSProperties = {
-    width: '135px',
+    width: '170px',
     maxHeight: '200px',
     position: 'absolute',
     overflow: 'auto',
@@ -25,7 +25,7 @@ const ColumnFilterList: React.FC<FilterListProps> = ({ position, listData, handl
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.table.style.backgroundColor,
     left: `${position?.x}px`,
     top: `${position?.y}px`,
   };
@@ -56,15 +56,15 @@ const ColumnFilterList: React.FC<FilterListProps> = ({ position, listData, handl
 
   return (
     <div style={listStyle} id="filterBox">
-      <input type="text" onChange={handleFilter} placeholder='Search ' />
+      <input type="text" onChange={handleFilter} placeholder='Search ' style={{ padding: '5px', border: '1px solid #E2E8F0', borderRadius: '8px' }} />
       {filterData.map((value: string, index: number) => (
-        <div key={index}>
+        <div key={index} style={{ display: 'flex', justifyContent: "flex-start", alignItems: "center", gap: "2px" }}>
           <input
             type="checkbox"
             onChange={() => handleCheckboxChange(value)}
             checked={selectedFilter?.includes(value)}
           />
-        {value.length > 10 ? value.substring(0, 10)+'...' : value}
+          {value.length > 10 ? value.substring(0, 10) + '...' : value}
         </div>
       ))}
     </div>

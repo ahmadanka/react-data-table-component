@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FaRegEdit, FaRegCopy, FaRegTrashAlt } from "react-icons/fa";
 interface Position {
   x: number;
@@ -7,10 +7,12 @@ interface Position {
 
 interface ActionsBoxProps {
   position: Position;
-  darkTheme?: boolean;
+  theme?: any;
 }
 
-const ActionsMenu: React.FC<ActionsBoxProps> = ({ position, darkTheme = false }) => {
+const ActionsMenu: React.FC<ActionsBoxProps> = ({ position, theme }) => {
+
+
   const actionsBoxStyle: React.CSSProperties = {
     width: '135px',
     height: '150px',
@@ -22,7 +24,7 @@ const ActionsMenu: React.FC<ActionsBoxProps> = ({ position, darkTheme = false })
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.table.style.backgroundColor,
     left: `${position?.x}px`,
     top: `${position?.y}px`,
   };
@@ -31,6 +33,7 @@ const ActionsMenu: React.FC<ActionsBoxProps> = ({ position, darkTheme = false })
     backgroundColor: 'transparent',
     display: 'flex',
     justifyContent: 'flex-start',
+    alignItems: 'center',
     gap: '10px',
     w: '125px',
     padding: '6px 12px 6px 12px',
@@ -41,6 +44,11 @@ const ActionsMenu: React.FC<ActionsBoxProps> = ({ position, darkTheme = false })
       backgroundColor: '#f7f7f7'
     }
   }
+
+  useEffect(() => {
+    console.log('theme', theme);
+    console.log('bg',);
+  }, []);
 
   return (
     <div id="actionsBox" style={actionsBoxStyle}>

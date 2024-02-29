@@ -119,6 +119,7 @@ export type TableProps<T> = {
 	searchComponentStyle?: CSSObject;
 	actionsIcon?: any
 	showFilter?: boolean;
+	mainComtainerId: string;
 };
 
 export type TableColumnBase = {

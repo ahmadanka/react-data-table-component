@@ -83,7 +83,9 @@ const ColumnText = styled.div`
 const IconBtn = styled.button`
 background-color: transparent;
  border: none;
-  cursor: pointer
+  cursor: pointer;
+	margin-left: 5px;
+	margin-right: 5px;
 `;
 
 type TableColProps<T> = {
