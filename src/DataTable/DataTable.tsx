@@ -33,7 +33,7 @@ import {
 } from './types';
 import useColumns from '../hooks/useColumns';
 import ActionsMenu from './ActionsMenu';
-import { IoEllipsisHorizontalSharp } from "react-icons/io5";
+import { IoEllipsisHorizontalSharp, IoCloseSharp } from "react-icons/io5";
 import SearchComponent from './SearchComponent';
 import ColumnFilterList from './ColumnFilterList';
 
@@ -224,7 +224,6 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 						return filterValues.includes(columnValue);
 					});
 				})
-				console.log('filteredData', filteredData);
 
 				return filteredData.length > 0 ? filteredData.slice(firstIndex, lastIndex) : [];
 			} else {
@@ -438,7 +437,6 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 
 
 
-
 	React.useEffect(() => {
 		if (showActionsColumn) {
 			const columns = [
@@ -577,12 +575,17 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 				setFilters((prevFilterArray) => [...prevFilterArray, newFilter]);
 			}
 		}
+
+		console.log('filters', filters);
+
 	};
 
 
 
 
-
+	const handleClearFilter = (columnName: string) => {
+		setFilters(prevFilters => prevFilters.filter(filter => filter.columnName !== columnName));
+	};
 
 
 	return (
@@ -620,6 +623,22 @@ function DataTable<T>(props: TableProps<T>): JSX.Element {
 						filterText={filterText}
 						wrapperStyle={searchComponentStyle}
 					/>}
+					{<div style={{ display: "flex", flexDirection: 'row', gap: '10px' }}>
+						{
+							filters && filters.map((filter, index) => {
+								return (
+									filter.filterText.length > 0 && (
+										<div key={index} style={{marginTop:"5px",  border: '2px solid #DB4A11', padding: '10px', borderRadius: '10px', display: "flex", flexDirection: "row" }}>
+											<p style={{ fontWeight: "bold", color: "#DB4A11" }}>
+												{filter.columnName + ': ' + filter.filterText.map(text => text.substring(0, 10) + '..').join(', ')}
+											</p>
+											<button style={{ backgroundColor: "transparent", border: "none", fontSize: '19px' ,color: "#DB4A11" }} onClick={() => handleClearFilter(filter.columnName)} ><IoCloseSharp /></button>
+										</div>
+									)
+								)
+							})
+						}
+					</div>}
 					<Table disabled={disabled} className="rdt_Table" role="table">
 						{showTableHead() && (
 							<Head className="rdt_TableHead" role="rowgroup" $fixedHeader={fixedHeader}>
